@@ -38,14 +38,3 @@
             name: market-report-${{ github.run_number }}
             path: market_report_*.html
             retention-days: 30
-
-  Changed from:
-  - name: market-report-${{ github.event.head_commit.sha }}
-
-  To:
-  - name: market-report-${{ github.run_number }}
-
-  This will name artifacts like:
-  - market-report-1
-  - market-report-2
-  - market-report-3 (your latest run)
