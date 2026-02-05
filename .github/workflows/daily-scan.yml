@@ -60,20 +60,3 @@
             REPORT_FILE=$(ls market_report_*.html 2>/dev/null | head -1)
             echo "report_file=$REPORT_FILE" >> $GITHUB_OUTPUT
             echo "Report generated: $REPORT_FILE"
-
-        # Step 8: Commit report to repo (optional - saves report in repo)
-        - name: Commit report to repository
-          if: success()
-          run: |
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-
-            # Create or update reports directory
-            mkdir -p reports
-
-            # Copy/move report
-            mv market_report_*.html reports/ 2>/dev/null || true
-
-            git add reports/
-            git commit -m "Update market report [skip ci]"
-            git push
