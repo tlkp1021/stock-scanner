@@ -1,0 +1,1383 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Market Scanner Report - 2026-02-05</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .subtitle {
+            color: #888;
+            font-size: 1.1em;
+        }
+
+        .market-context {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .market-context h2 {
+            color: #00d9ff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .context-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .context-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #00d9ff;
+        }
+
+        .context-item .label {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .context-item .value {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .signals-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .signals-summary h2 {
+            color: #00ff88;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .signal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .asset-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .asset-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .asset-card .asset-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .asset-card .asset-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .asset-card .asset-symbol {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .asset-card .asset-type {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            text-transform: uppercase;
+        }
+
+        .asset-card .type-stock { background: rgba(59, 130, 246, 0.3); color: #60a5fa; }
+        .asset-card .type-crypto { background: rgba(251, 191, 36, 0.3); color: #fbbf24; }
+        .asset-card .type-index { background: rgba(139, 92, 246, 0.3); color: #a78bfa; }
+        .asset-card .type-commodity { background: rgba(234, 179, 8, 0.3); color: #eab308; }
+        .asset-card .type-etf { background: rgba(34, 197, 94, 0.3); color: #4ade80; }
+
+        .asset-card .price-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .asset-card .price {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .asset-card .price-change {
+            font-size: 1em;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+
+        .price-change.positive { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .price-change.negative { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .price-change.neutral { background: rgba(255, 255, 255, 0.1); color: #888; }
+
+        .asset-card .signal-badge {
+            text-align: center;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .signal-badge.strong-buy { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
+        .signal-badge.buy { background: linear-gradient(135deg, #10b981, #34d399); color: #fff; }
+        .signal-badge.weak-buy { background: rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+        .signal-badge.hold { background: rgba(255, 255, 255, 0.1); color: #888; }
+        .signal-badge.weak-sell { background: rgba(239, 68, 68, 0.3); color: #fca5a5; }
+        .signal-badge.sell { background: linear-gradient(135deg, #ef4444, #f87171); color: #fff; }
+        .signal-badge.strong-sell { background: linear-gradient(135deg, #dc2626, #ef4444); color: #fff; }
+
+        .asset-card .indicators {
+            margin-top: 15px;
+        }
+
+        .asset-card .indicator-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9em;
+        }
+
+        .asset-card .indicator-label {
+            color: #888;
+        }
+
+        .asset-card .indicator-value {
+            color: #e0e0e0;
+        }
+
+        .asset-card .signal-reasons {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .asset-card .signal-reasons h4 {
+            color: #00d9ff;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .asset-card .price-datetime {
+            color: #666;
+            font-size: 0.75em;
+            text-align: center;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+
+        .asset-card .signal-explanation {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-size: 0.8em;
+            color: #bbb;
+            line-height: 1.4;
+        }
+
+        .asset-card .signal-explanation strong {
+            color: #fff;
+        }
+
+        .asset-card .signal-explanation ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .asset-card .signal-explanation li {
+            margin: 4px 0;
+        }
+
+        .asset-card .signal-reasons ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .asset-card .signal-reasons li {
+            padding: 5px 0;
+            font-size: 0.85em;
+            color: #aaa;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .asset-card .signal-reasons li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #00d9ff;
+        }
+
+        .chart-patterns {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border-left: 3px solid #fbbf24;
+        }
+
+        .chart-patterns h5 {
+            color: #fbbf24;
+            margin: 0 0 8px 0;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pattern-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 0;
+            font-size: 0.75em;
+        }
+
+        .pattern-name {
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .pattern-bullish {
+            color: #4ade80;
+        }
+
+        .pattern-bearish {
+            color: #f87171;
+        }
+
+        .pattern-neutral {
+            color: #888;
+        }
+
+        .pattern-reliability {
+            margin-left: auto;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7em;
+        }
+
+        .pattern-reliability.high {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        .pattern-reliability.medium {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .pattern-reliability.low {
+            background: rgba(107, 114, 128, 0.2);
+            color: #888;
+        }
+
+        .no-patterns {
+            color: #666;
+            font-size: 0.75em;
+            font-style: italic;
+        }
+
+        .news-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .news-section h2 {
+            color: #fbbf24;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .news-item {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #fbbf24;
+        }
+
+        .news-item .title {
+            color: #fff;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .news-item .meta {
+            color: #888;
+            font-size: 0.85em;
+        }
+
+        .news-item a {
+            color: #00d9ff;
+            text-decoration: none;
+        }
+
+        .news-item a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .disclaimer {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.85em;
+            color: #fca5a5;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-box .value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #00ff88;
+        }
+
+        .stat-box .label {
+            color: #888;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .signal-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Chart modal styles */
+        .chart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .chart-modal.active {
+            display: flex;
+        }
+
+        .chart-modal-content {
+            background: #1a1a2e;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .chart-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-modal-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #00d9ff;
+        }
+
+        .chart-modal-close {
+            background: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .chart-modal-close:hover {
+            background: rgba(239, 68, 68, 0.5);
+        }
+
+        .chart-container {
+            height: 400px;
+            position: relative;
+        }
+
+        .asset-card {
+            cursor: pointer;
+        }
+
+        .asset-card:hover {
+            border-color: rgba(0, 217, 255, 0.3);
+        }
+
+        .chart-hint {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 217, 255, 0.2);
+            color: #00d9ff;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.7em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Daily Market Scanner Report</h1>
+            <p class="subtitle">Generated on 2026-02-05 at 23:25:25</p>
+        </div>
+
+        <div class="market-context">
+            <h2>🌐 Market Context</h2>
+            <div class="context-grid">
+                
+                <div class="context-item">
+                    <div class="label">Fear & Greed Index</div>
+                    <div class="value">Extreme Fear (12/100)</div>
+                    <div style="margin-top: 5px; font-size: 0.85em; color: #888;">Extreme Fear - High panic, may signal buying opportunity</div>
+                </div>
+                
+                
+                <div class="context-item">
+                    <div class="label">VIX (Volatility Index)</div>
+                    <div class="value">22.18</div>
+                    <div style="margin-top: 5px; font-size: 0.85em; color: #888;">Moderate volatility (22.18) - Some uncertainty in markets</div>
+                </div>
+                
+                
+                <div class="context-item">
+                    <div class="label">AD Line (Market Breadth)</div>
+                    <div class="value">Bullish</div>
+                    <div style="margin-top: 5px; font-size: 0.85em; color: #888;">NYSE breadth is positive with +1.5% over 20 days - moderate participation across NYSE stocks</div>
+                </div>
+                
+            </div>
+        </div>
+
+        <div class="signals-summary">
+            <h2>📈 Trading Signals</h2>
+            <div class="summary-stats">
+                <div class="stat-box">
+                    <div class="value" style="color: #10b981;">6</div>
+                    <div class="label">Buy Signals</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" style="color: #888;">0</div>
+                    <div class="label">Hold/Neutral</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" style="color: #ef4444;">1</div>
+                    <div class="label">Sell Signals</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="signals-summary">
+            <h2>🎯 Detailed Asset Analysis</h2>
+            <div class="signal-grid">
+                
+                <div class="asset-card" onclick="openChartModal('^NYA')">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">NYSE Composite Index</div>
+                            <div class="asset-symbol">^NYA</div>
+                        </div>
+                        <span class="asset-type type-index">index</span>
+                        <div class="chart-hint">Click for chart</div>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price">$22,826.55</div>
+                        <div class="price-change negative">
+                            -0.65%
+                        </div>
+                    </div>
+
+                    <div class="price-datetime">
+                        Price as of: 2026-02-05 00:00:00
+                    </div>
+
+                    <div class="signal-badge strong-buy">
+                        STRONG BUY
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">50.6</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">MACD</span>
+                            <span class="indicator-value">175.95</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA20</span>
+                            <span class="indicator-value">0.3%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA200</span>
+                            <span class="indicator-value">8.4%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Stochastic %K</span>
+                            <span class="indicator-value">64.8</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Bollinger Position</span>
+                            <span class="indicator-value">62.8%</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="signal-explanation">
+                        <strong>Strong Buy Signal</strong> - Multiple technical indicators align to suggest a significant buying opportunity. Current price: $22826.55 (-0.65%)<br><strong>Point Breakdown:</strong><br><br>  Chart Patterns:<br>    • 📈 Ascending Triangle Pattern: +2 - <br>    • 📈 Rounding Bottom Pattern: +2 - <br>    • 📈 Resistance Breakout Pattern: +1.5 - <br><br>  Trend Indicators:<br>    • 📉 MACD Position: -0.5 - Below signal line, negative histogram<br>    • 📈 Moving Average Alignment: +1.5 - Price > MA20 > MA50 (Golden Cross setup)<br>    • 📈 200-day MA: 0 - Above 200-day MA (no points - trend factor only)<br><br>  Price Action:<br>    • 📉 52-Week Position: -0.5 - Top 10% of range - Extended<br><br>  Volume:<br>    • 📉 Volume: 0 - 0.0× average - Weak participation (no points)<br><br>  <strong>Base Score: 6.00</strong><br><br><strong>Key Bullish Factors:</strong><br>  • Ascending Triangle pattern (high reliability): Ascending triangle with resistance at $23031.45 - bullish breakout potential<br>  • Rounding Bottom pattern (medium reliability): Rounding bottom pattern formed at $22003.93<br>  • Resistance Breakout pattern (medium reliability): Breaking above resistance at $22251.44<br>  • Price is above 20-day and 50-day MAs with bullish alignment<br>  • Price is above the 200-day moving average - long-term uptrend<br><br><strong>Cautionary Notes:</strong><br>  • MACD (175.95) is below signal line with negative histogram<br>  • Very low volume (0.0x average) suggests weak participation<br><br><strong>Action:</strong> Consider building positions with proper risk management. The confluence of oversold conditions and bullish momentum suggests potential upside.
+                    </div>
+                    
+
+                    
+                    <div class="signal-reasons">
+                        <h4>Key Signals:</h4>
+                        <ul>
+                            
+                            <li>Chart Pattern: Ascending Triangle detected</li>
+                            
+                            <li>Chart Pattern: Rounding Bottom detected</li>
+                            
+                            <li>Chart Pattern: Resistance Breakout detected</li>
+                            
+                            <li>Price above MA(20) > MA(50) with bullish alignment</li>
+                            
+                        </ul>
+                    </div>
+                    
+
+                    
+                    <div class="chart-patterns">
+                        <h5>Chart Patterns Detected:</h5>
+                        
+                        <div class="pattern-item">
+                            <span class="pattern-name pattern-bullish">Ascending Triangle</span>
+                            <span class="pattern-reliability high">High</span>
+                        </div>
+                        
+                        <div class="pattern-item">
+                            <span class="pattern-name pattern-bullish">Rounding Bottom</span>
+                            <span class="pattern-reliability medium">Medium</span>
+                        </div>
+                        
+                        <div class="pattern-item">
+                            <span class="pattern-name pattern-bullish">Resistance Breakout</span>
+                            <span class="pattern-reliability medium">Medium</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="asset-card" onclick="openChartModal('^HSI')">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">Hang Seng Index</div>
+                            <div class="asset-symbol">^HSI</div>
+                        </div>
+                        <span class="asset-type type-index">index</span>
+                        <div class="chart-hint">Click for chart</div>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price">$26,885.24</div>
+                        <div class="price-change positive">
+                            +0.14%
+                        </div>
+                    </div>
+
+                    <div class="price-datetime">
+                        Price as of: 2026-02-05 00:00:00
+                    </div>
+
+                    <div class="signal-badge buy">
+                        BUY
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">50.6</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">MACD</span>
+                            <span class="indicator-value">219.03</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA20</span>
+                            <span class="indicator-value">-0.0%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA200</span>
+                            <span class="indicator-value">6.6%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Stochastic %K</span>
+                            <span class="indicator-value">30.8</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Bollinger Position</span>
+                            <span class="indicator-value">49.4%</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="signal-explanation">
+                        <strong>Buy Signal</strong> - Technical indicators favor the bullish side. Current price: $26885.24 (+0.14%)<br><strong>Point Breakdown:</strong><br><br>  Chart Patterns:<br>    • 📈 Rounding Bottom Pattern: +2 - <br>    • 📈 Resistance Breakout Pattern: +1.5 - <br><br>  Trend Indicators:<br>    • 📉 MACD Position: -0.5 - Below signal line, negative histogram<br>    • 📈 200-day MA: 0 - Above 200-day MA (no points - trend factor only)<br><br>  Volume:<br>    • 📉 Volume: 0 - 0.0× average - Weak participation (no points)<br><br>  <strong>Base Score: 3.00</strong><br><br><strong>Supporting Factors:</strong><br>  • Rounding Bottom pattern (medium reliability): Rounding bottom pattern formed at $25630.54<br>  • Resistance Breakout pattern (medium reliability): Breaking above resistance at $25916.25<br>  • Price is above the 200-day moving average - long-term uptrend<br><br><strong>Watch For:</strong><br>  • MACD (219.03) is below signal line with negative histogram<br>  • Very low volume (0.0x average) suggests weak participation<br><br><strong>Action:</strong> Favorable entry point for long positions. Look for confirmation from volume continuation.
+                    </div>
+                    
+
+                    
+                    <div class="signal-reasons">
+                        <h4>Key Signals:</h4>
+                        <ul>
+                            
+                            <li>Chart Pattern: Rounding Bottom detected</li>
+                            
+                            <li>Chart Pattern: Resistance Breakout detected</li>
+                            
+                        </ul>
+                    </div>
+                    
+
+                    
+                    <div class="chart-patterns">
+                        <h5>Chart Patterns Detected:</h5>
+                        
+                        <div class="pattern-item">
+                            <span class="pattern-name pattern-bullish">Rounding Bottom</span>
+                            <span class="pattern-reliability medium">Medium</span>
+                        </div>
+                        
+                        <div class="pattern-item">
+                            <span class="pattern-name pattern-bullish">Resistance Breakout</span>
+                            <span class="pattern-reliability medium">Medium</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="asset-card" onclick="openChartModal('BTC-USD')">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">Bitcoin</div>
+                            <div class="asset-symbol">BTC-USD</div>
+                        </div>
+                        <span class="asset-type type-crypto">crypto</span>
+                        <div class="chart-hint">Click for chart</div>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price">$67,539.29</div>
+                        <div class="price-change negative">
+                            -7.51%
+                        </div>
+                    </div>
+
+                    <div class="price-datetime">
+                        Price as of: 2026-02-05 00:00:00
+                    </div>
+
+                    <div class="signal-badge buy">
+                        BUY
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">14.2</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">MACD</span>
+                            <span class="indicator-value">-4776.81</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA20</span>
+                            <span class="indicator-value">-20.5%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA200</span>
+                            <span class="indicator-value">-34.5%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Stochastic %K</span>
+                            <span class="indicator-value">N/A</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Bollinger Position</span>
+                            <span class="indicator-value">-8.6%</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="signal-explanation">
+                        <strong>Buy Signal</strong> - Technical indicators favor the bullish side. Current price: $67539.29 (-7.51%)<br><strong>Point Breakdown:</strong><br><br>  Trend Indicators:<br>    • 📉 MACD Position: -0.5 - Below signal line, negative histogram<br>    • 📉 Moving Average Alignment: -1.5 - Price < MA20 < MA50 (Death Cross setup)<br>    • 📉 200-day MA: -1 - Below 200-day MA<br><br>  Momentum Indicators:<br>    • 📈 RSI (14.2): +2 - Deeply oversold (<25)<br>    • 📈 Stochastic: +1.5 - 0.0/7.1 - Deeply oversold<br>    • 📈 Williams %R: +1 - -100.0 - Oversold<br>    • 📈 CCI: +1 - -176.4 - Oversold<br><br>  Volatility:<br>    • 📈 Bollinger Bands: +1 - Below lower band (-8.6% position)<br><br>  Price Action:<br>    • 📉 Price Momentum: -1 - -7.5% - Selling pressure<br>    • 📈 52-Week Position: +0.5 - Bottom 20% of range - Value zone<br><br>  Volume:<br>    • Volume Confirmation: ×1.1 (+0.25) - 1.9× average - Multiplier applied<br><br>  <strong>Base Score: 2.95</strong> → <strong>Final Score: 3.25</strong> (after volume multiplier)<br><br><strong>Supporting Factors:</strong><br>  • RSI at 14.2 is deeply oversold (<25), suggesting potential bounce opportunity<br>  • Price is below the lower Bollinger Band - oversold conditions<br>  • Stochastic is deeply oversold (<15), suggesting potential bounce<br>  • Williams %R at -100.0 indicates deeply oversold conditions<br><br><strong>Watch For:</strong><br>  • MACD (-4776.81) is below signal line with negative histogram<br>  • Price is below both 20-day and 50-day moving averages - downtrend<br><br><strong>Action:</strong> Favorable entry point for long positions. Look for confirmation from volume continuation.
+                    </div>
+                    
+
+                    
+                    <div class="signal-reasons">
+                        <h4>Key Signals:</h4>
+                        <ul>
+                            
+                            <li>RSI (14.2) deeply oversold - BUY signal</li>
+                            
+                            <li>Price below MA(20) < MA(50) - bearish trend</li>
+                            
+                            <li>Price below lower Bollinger Band - oversold</li>
+                            
+                            <li>Stochastic (0.0/7.1) deeply oversold - potential BUY</li>
+                            
+                        </ul>
+                    </div>
+                    
+
+                    
+                </div>
+                
+                <div class="asset-card" onclick="openChartModal('GC=F')">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">Gold Futures</div>
+                            <div class="asset-symbol">GC=F</div>
+                        </div>
+                        <span class="asset-type type-commodity">commodity</span>
+                        <div class="chart-hint">Click for chart</div>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price">$4,848.80</div>
+                        <div class="price-change negative">
+                            -1.46%
+                        </div>
+                    </div>
+
+                    <div class="price-datetime">
+                        Price as of: 2026-02-05 00:00:00
+                    </div>
+
+                    <div class="signal-badge buy">
+                        BUY
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">56.4</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">MACD</span>
+                            <span class="indicator-value">125.56</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA20</span>
+                            <span class="indicator-value">0.8%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA200</span>
+                            <span class="indicator-value">27.6%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Stochastic %K</span>
+                            <span class="indicator-value">37.8</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Bollinger Position</span>
+                            <span class="indicator-value">53.7%</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="signal-explanation">
+                        <strong>Buy Signal</strong> - Technical indicators favor the bullish side. Current price: $4848.80 (-1.46%)<br><strong>Point Breakdown:</strong><br><br>  Chart Patterns:<br>    • 📈 Bullish Pennant Pattern: +2 - <br>    • 📈 Resistance Breakout Pattern: +1.5 - <br><br>  Trend Indicators:<br>    • 📉 MACD Position: -0.5 - Below signal line, negative histogram<br>    • 📈 Moving Average Alignment: +1.5 - Price > MA20 > MA50 (Golden Cross setup)<br>    • 📈 200-day MA: 0 - Above 200-day MA (no points - trend factor only)<br><br>  Volume:<br>    • Volume Confirmation: ×1.1 (+0.45) - 10.0× average - Multiplier applied<br><br>  <strong>Base Score: 4.50</strong> → <strong>Final Score: 4.95</strong> (after volume multiplier)<br><br><strong>Supporting Factors:</strong><br>  • Bullish Pennant pattern (medium reliability): Bullish pennant - converging price action suggests continuation of uptrend<br>  • Resistance Breakout pattern (medium reliability): Breaking above resistance at $4619.28<br>  • Price is above 20-day and 50-day MAs with bullish alignment<br>  • Price is above the 200-day moving average - long-term uptrend<br><br><strong>Watch For:</strong><br>  • MACD (125.56) is below signal line with negative histogram<br><br><strong>Action:</strong> Favorable entry point for long positions. Look for confirmation from volume continuation.
+                    </div>
+                    
+
+                    
+                    <div class="signal-reasons">
+                        <h4>Key Signals:</h4>
+                        <ul>
+                            
+                            <li>Chart Pattern: Bullish Pennant detected</li>
+                            
+                            <li>Chart Pattern: Resistance Breakout detected</li>
+                            
+                            <li>Price above MA(20) > MA(50) with bullish alignment</li>
+                            
+                        </ul>
+                    </div>
+                    
+
+                    
+                    <div class="chart-patterns">
+                        <h5>Chart Patterns Detected:</h5>
+                        
+                        <div class="pattern-item">
+                            <span class="pattern-name pattern-bullish">Bullish Pennant</span>
+                            <span class="pattern-reliability medium">Medium</span>
+                        </div>
+                        
+                        <div class="pattern-item">
+                            <span class="pattern-name pattern-bullish">Resistance Breakout</span>
+                            <span class="pattern-reliability medium">Medium</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="asset-card" onclick="openChartModal('TSLA')">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">Tesla Inc</div>
+                            <div class="asset-symbol">TSLA</div>
+                        </div>
+                        <span class="asset-type type-stock">stock</span>
+                        <div class="chart-hint">Click for chart</div>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price">$391.79</div>
+                        <div class="price-change negative">
+                            -3.50%
+                        </div>
+                    </div>
+
+                    <div class="price-datetime">
+                        Price as of: 2026-02-05 00:00:00
+                    </div>
+
+                    <div class="signal-badge weak-buy">
+                        WEAK BUY
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">32.8</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">MACD</span>
+                            <span class="indicator-value">-10.42</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA20</span>
+                            <span class="indicator-value">-9.2%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA200</span>
+                            <span class="indicator-value">2.9%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Stochastic %K</span>
+                            <span class="indicator-value">6.6</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Bollinger Position</span>
+                            <span class="indicator-value">-15.6%</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="signal-explanation">
+                        <strong>Weak Buy Signal</strong> - Slight bullish bias but conviction is moderate. Current price: $391.79 (-3.50%)<br><strong>Point Breakdown:</strong><br><br>  Trend Indicators:<br>    • 📉 MACD Position: -0.5 - Below signal line, negative histogram<br>    • 📉 Moving Average Alignment: -1.5 - Price < MA20 < MA50 (Death Cross setup)<br>    • 📈 200-day MA: 0 - Above 200-day MA (no points - trend factor only)<br><br>  Momentum Indicators:<br>    • 📈 RSI (32.8): +1 - Approaching oversold (<35)<br>    • 📈 Stochastic: +1.5 - 6.6/13.6 - Deeply oversold<br>    • 📈 Williams %R: +1 - -93.4 - Oversold<br>    • 📈 CCI: +1 - -250.1 - Oversold<br><br>  Volatility:<br>    • 📈 Bollinger Bands: +1 - Below lower band (-15.6% position)<br><br>  Price Action:<br>    • 📉 Price Momentum: -1 - -3.5% - Selling pressure<br><br>  <strong>Base Score: 2.50</strong><br><br><strong>Positive Indicators:</strong><br>  • RSI at 32.8 is approaching oversold levels (<35)<br>  • Price is above the 200-day moving average - long-term uptrend<br>  • Price is below the lower Bollinger Band - oversold conditions<br>Limited bullish confirmation available.<br><br><strong>Concerns:</strong><br>  • MACD (-10.42) is below signal line with negative histogram<br>  • Price is below both 20-day and 50-day moving averages - downtrend<br><br><strong>Action:</strong> Approach with caution. Consider smaller position sizes or wait for more confirmation.
+                    </div>
+                    
+
+                    
+                    <div class="signal-reasons">
+                        <h4>Key Signals:</h4>
+                        <ul>
+                            
+                            <li>RSI (32.8) approaching oversold territory</li>
+                            
+                            <li>Price below MA(20) < MA(50) - bearish trend</li>
+                            
+                            <li>Price below lower Bollinger Band - oversold</li>
+                            
+                            <li>Stochastic (6.6/13.6) deeply oversold - potential BUY</li>
+                            
+                        </ul>
+                    </div>
+                    
+
+                    
+                </div>
+                
+                <div class="asset-card" onclick="openChartModal('MSFT')">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">Microsoft Corp</div>
+                            <div class="asset-symbol">MSFT</div>
+                        </div>
+                        <span class="asset-type type-stock">stock</span>
+                        <div class="chart-hint">Click for chart</div>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price">$401.07</div>
+                        <div class="price-change negative">
+                            -3.17%
+                        </div>
+                    </div>
+
+                    <div class="price-datetime">
+                        Price as of: 2026-02-05 00:00:00
+                    </div>
+
+                    <div class="signal-badge weak-buy">
+                        WEAK BUY
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">30.6</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">MACD</span>
+                            <span class="indicator-value">-16.86</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA20</span>
+                            <span class="indicator-value">-11.3%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA200</span>
+                            <span class="indicator-value">-17.6%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Stochastic %K</span>
+                            <span class="indicator-value">3.9</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Bollinger Position</span>
+                            <span class="indicator-value">-0.5%</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="signal-explanation">
+                        <strong>Weak Buy Signal</strong> - Slight bullish bias but conviction is moderate. Current price: $401.07 (-3.17%)<br><strong>Point Breakdown:</strong><br><br>  Trend Indicators:<br>    • 📉 MACD Position: -0.5 - Below signal line, negative histogram<br>    • 📉 Moving Average Alignment: -1.5 - Price < MA20 < MA50 (Death Cross setup)<br>    • 📉 200-day MA: -1 - Below 200-day MA<br><br>  Momentum Indicators:<br>    • 📈 RSI (30.6): +1 - Approaching oversold (<35)<br>    • 📈 Stochastic: +1.5 - 3.9/5.0 - Deeply oversold<br>    • 📈 Williams %R: +1 - -96.1 - Oversold<br>    • 📈 CCI: +1 - -164.1 - Oversold<br><br>  Volatility:<br>    • 📈 Bollinger Bands: +1 - Below lower band (-0.5% position)<br><br>  Price Action:<br>    • 📉 Price Momentum: -1 - -3.2% - Selling pressure<br><br>  <strong>Base Score: 1.50</strong><br><br><strong>Positive Indicators:</strong><br>  • RSI at 30.6 is approaching oversold levels (<35)<br>  • Price is below the lower Bollinger Band - oversold conditions<br>  • Stochastic is deeply oversold (<15), suggesting potential bounce<br>Limited bullish confirmation available.<br><br><strong>Concerns:</strong><br>  • MACD (-16.86) is below signal line with negative histogram<br>  • Price is below both 20-day and 50-day moving averages - downtrend<br><br><strong>Action:</strong> Approach with caution. Consider smaller position sizes or wait for more confirmation.
+                    </div>
+                    
+
+                    
+                    <div class="signal-reasons">
+                        <h4>Key Signals:</h4>
+                        <ul>
+                            
+                            <li>RSI (30.6) approaching oversold territory</li>
+                            
+                            <li>Price below MA(20) < MA(50) - bearish trend</li>
+                            
+                            <li>Price below lower Bollinger Band - oversold</li>
+                            
+                            <li>Stochastic (3.9/5.0) deeply oversold - potential BUY</li>
+                            
+                        </ul>
+                    </div>
+                    
+
+                    
+                </div>
+                
+                <div class="asset-card" onclick="openChartModal('TLT')">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">iShares 20+ Year Treasury Bond ETF</div>
+                            <div class="asset-symbol">TLT</div>
+                        </div>
+                        <span class="asset-type type-etf">etf</span>
+                        <div class="chart-hint">Click for chart</div>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price">$87.21</div>
+                        <div class="price-change positive">
+                            +0.78%
+                        </div>
+                    </div>
+
+                    <div class="price-datetime">
+                        Price as of: 2026-02-05 00:00:00
+                    </div>
+
+                    <div class="signal-badge weak-sell">
+                        WEAK SELL
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">41.3</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">MACD</span>
+                            <span class="indicator-value">-0.28</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA20</span>
+                            <span class="indicator-value">-0.3%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA200</span>
+                            <span class="indicator-value">-0.8%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Stochastic %K</span>
+                            <span class="indicator-value">38.1</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Bollinger Position</span>
+                            <span class="indicator-value">36.7%</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="signal-explanation">
+                        <strong>Weak Sell Signal</strong> - Slight bearish bias but conviction is moderate. Current price: $87.21 (+0.78%)<br><strong>Point Breakdown:</strong><br><br>  Chart Patterns:<br>    • 📈 Rounding Bottom Pattern: +2 - <br><br>  Trend Indicators:<br>    • 📉 MACD Position: -0.5 - Below signal line, negative histogram<br>    • 📉 Moving Average Alignment: -1.5 - Price < MA20 < MA50 (Death Cross setup)<br>    • 📉 200-day MA: -1 - Below 200-day MA<br><br>  Volume:<br>    • 📉 Volume: 0 - 0.3× average - Weak participation (no points)<br><br>  <strong>Base Score: -1.00</strong><br><br><strong>Negative Indicators:</strong><br>  • MACD (-0.28) is below signal line with negative histogram<br>  • Price is below both 20-day and 50-day moving averages - downtrend<br>  • Price is below the 200-day moving average - long-term downtrend<br><br><strong>Positive Notes:</strong><br>  • Rounding Bottom pattern (medium reliability): Rounding bottom pattern formed at $86.54<br><br><strong>Action:</strong> Consider trimming positions or tightening stop losses. Wait for clearer signals before making major moves.
+                    </div>
+                    
+
+                    
+                    <div class="signal-reasons">
+                        <h4>Key Signals:</h4>
+                        <ul>
+                            
+                            <li>Chart Pattern: Rounding Bottom detected</li>
+                            
+                            <li>Price below MA(20) < MA(50) - bearish trend</li>
+                            
+                        </ul>
+                    </div>
+                    
+
+                    
+                    <div class="chart-patterns">
+                        <h5>Chart Patterns Detected:</h5>
+                        
+                        <div class="pattern-item">
+                            <span class="pattern-name pattern-bullish">Rounding Bottom</span>
+                            <span class="pattern-reliability medium">Medium</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+
+        
+
+        <div class="footer">
+            <p>Report generated by Stock Scanner</p>
+            <div class="disclaimer">
+                <strong>Disclaimer:</strong> This report is for informational purposes only and does not constitute
+                financial advice. Always do your own research and consult with a qualified financial advisor
+                before making investment decisions. Past performance does not guarantee future results.
+            </div>
+        </div>
+
+        <!-- Chart Modal -->
+        <div class="chart-modal" id="chartModal">
+            <div class="chart-modal-content">
+                <div class="chart-modal-header">
+                    <div class="chart-modal-title" id="chartTitle">Price Chart</div>
+                    <button class="chart-modal-close" onclick="closeChartModal()">&times;</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <script>
+            // Store all chart data
+            const assetsData = {
+                
+                '^NYA': {
+                    name: 'NYSE Composite Index',
+                    symbol: '^NYA',
+                    dates: ["2025-12-23", "2025-12-24", "2025-12-26", "2025-12-29", "2025-12-30", "2025-12-31", "2026-01-02", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05"],
+                    closes: [22151.720703125, 22229.109375, 22246.560546875, 22165.94921875, 22148.080078125, 22003.9296875, 22233.890625, 22432.099609375, 22570.8203125, 22341.23046875, 22485.650390625, 22591.73046875, 22695.9296875, 22655.439453125, 22721.23046875, 22808.810546875, 22807.0703125, 22473.2109375, 22726.5, 22797.169921875, 22757.16015625, 22829.140625, 22878.220703125, 22800.099609375, 22875.4609375, 22719.330078125, 22885.650390625, 22881.2109375, 22975.58984375, 22826.5546875],
+                    volumes: [3820560000, 1798270000, 2586550000, 3541750000, 3309930000, 3261830000, 4184120000, 5771930000, 5509680000, 5214480000, 5333200000, 5163900000, 5019040000, 5091730000, 5530830000, 5114050000, 5356550000, 5769500000, 5835520000, 5307580000, 4871930000, 4968050000, 5331720000, 5507670000, 6877780000, 6697340000, 5772050000, 7017660000, 7475750000, 0]
+                },
+                
+                '^HSI': {
+                    name: 'Hang Seng Index',
+                    symbol: '^HSI',
+                    dates: ["2025-12-23", "2025-12-24", "2025-12-29", "2025-12-30", "2025-12-31", "2026-01-02", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-19", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05"],
+                    closes: [25774.140625, 25818.9296875, 25635.23046875, 25854.599609375, 25630.5390625, 26338.470703125, 26347.240234375, 26710.44921875, 26458.94921875, 26149.310546875, 26231.7890625, 26608.48046875, 26848.470703125, 26999.810546875, 26923.619140625, 26844.9609375, 26563.900390625, 26487.509765625, 26585.060546875, 26629.9609375, 26749.509765625, 26765.51953125, 27126.94921875, 27826.91015625, 27968.08984375, 27387.109375, 26775.5703125, 26834.76953125, 26847.3203125, 26885.240234375],
+                    volumes: [2240900000, 1236300000, 2931600000, 3138100000, 1651000000, 1489700000, 3692200000, 3800900000, 3645300000, 3243300000, 3241700000, 3599600000, 3691700000, 4849600000, 3573700000, 3365900000, 2742400000, 2770800000, 2998700000, 2990900000, 2803500000, 2926500000, 3063200000, 5050200000, 4396400000, 4427500000, 4835000000, 3425200000, 2984800000, 0]
+                },
+                
+                'BTC-USD': {
+                    name: 'Bitcoin',
+                    symbol: 'BTC-USD',
+                    dates: ["2026-01-07", "2026-01-08", "2026-01-09", "2026-01-10", "2026-01-11", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-17", "2026-01-18", "2026-01-19", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-24", "2026-01-25", "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-01-31", "2026-02-01", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05"],
+                    closes: [91308.0546875, 91027.125, 90513.1015625, 90386.6484375, 90827.4609375, 91192.9921875, 95321.78125, 96929.328125, 95551.1875, 95525.1171875, 95099.921875, 93634.4296875, 92553.59375, 88310.90625, 89376.9609375, 89462.453125, 89503.875, 89110.734375, 86572.21875, 88267.140625, 89102.5703125, 89184.5703125, 84561.5859375, 84128.65625, 78621.1171875, 76974.4453125, 78688.765625, 75633.546875, 73019.703125, 67539.2890625],
+                    volumes: [43461295053.0, 42386697030.0, 38305906684.0, 12385895282.0, 17165568977.0, 41346275358.0, 54980674354.0, 60592490863.0, 53086363027.0, 33248170537.0, 16021715122.0, 20809781232.0, 39195241508.0, 53072968031.0, 56330422434.0, 35549685694.0, 38997586037.0, 14558687712.0, 36124986722.0, 45329286974.0, 38744942267.0, 39807419296.0, 64653083162.0, 72083816087.0, 70479259159.0, 53372509744.0, 75140589684.0, 68249110822.0, 67215363944.0, 92973629440.0]
+                },
+                
+                'GC=F': {
+                    name: 'Gold Futures',
+                    symbol: 'GC=F',
+                    dates: ["2025-12-23", "2025-12-24", "2025-12-26", "2025-12-29", "2025-12-30", "2025-12-31", "2026-01-02", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05"],
+                    closes: [4482.7998046875, 4480.60009765625, 4529.10009765625, 4325.10009765625, 4370.10009765625, 4325.60009765625, 4314.39990234375, 4436.89990234375, 4482.2001953125, 4449.2998046875, 4449.7001953125, 4490.2998046875, 4604.2998046875, 4589.2001953125, 4626.2998046875, 4616.2998046875, 4588.39990234375, 4759.60009765625, 4831.7998046875, 4908.7998046875, 4976.2001953125, 5079.7001953125, 5079.89990234375, 5301.60009765625, 5318.39990234375, 4713.89990234375, 4622.5, 4903.7001953125, 4920.39990234375, 4848.7998046875],
+                    volumes: [694, 500, 263, 2044, 1837, 785, 589, 618, 459, 972, 2423, 237, 156, 239, 1313, 4358, 352, 175, 1706, 1175, 169, 180, 34, 112054, 23709, 8374, 3588, 1213, 1213, 161180]
+                },
+                
+                'TSLA': {
+                    name: 'Tesla Inc',
+                    symbol: 'TSLA',
+                    dates: ["2025-12-23", "2025-12-24", "2025-12-26", "2025-12-29", "2025-12-30", "2025-12-31", "2026-01-02", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05"],
+                    closes: [485.55999755859375, 485.3999938964844, 475.19000244140625, 459.6400146484375, 454.42999267578125, 449.7200012207031, 438.07000732421875, 451.6700134277344, 432.9599914550781, 431.4100036621094, 435.79998779296875, 445.010009765625, 448.9599914550781, 447.20001220703125, 439.20001220703125, 438.57000732421875, 437.5, 419.25, 431.44000244140625, 449.3599853515625, 449.05999755859375, 435.20001220703125, 430.8999938964844, 431.4599914550781, 416.55999755859375, 430.4100036621094, 421.80999755859375, 421.9599914550781, 406.010009765625, 391.7900085449219],
+                    volumes: [58223600, 41285400, 58780700, 66263000, 59238500, 49078000, 85535400, 67940800, 89093800, 59828800, 57041100, 67331500, 61649600, 53719200, 57259500, 49465800, 60220600, 63187300, 68124000, 71546700, 56771400, 49397400, 37733100, 54857400, 81686100, 82626100, 58739500, 56886500, 74399400, 19625416]
+                },
+                
+                'MSFT': {
+                    name: 'Microsoft Corp',
+                    symbol: 'MSFT',
+                    dates: ["2025-12-23", "2025-12-24", "2025-12-26", "2025-12-29", "2025-12-30", "2025-12-31", "2026-01-02", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05"],
+                    closes: [486.8500061035156, 488.0199890136719, 487.7099914550781, 487.1000061035156, 487.4800109863281, 483.6199951171875, 472.94000244140625, 472.8500061035156, 478.510009765625, 483.4700012207031, 478.1099853515625, 479.2799987792969, 477.17999267578125, 470.6700134277344, 459.3800048828125, 456.6600036621094, 459.8599853515625, 454.5199890136719, 444.1099853515625, 451.1400146484375, 465.95001220703125, 470.2799987792969, 480.5799865722656, 481.6300048828125, 433.5, 430.2900085449219, 423.3699951171875, 411.2099914550781, 414.19000244140625, 401.06500244140625],
+                    volumes: [14683600, 5855900, 8842200, 10893400, 13944500, 15601600, 25571600, 25250300, 23037700, 25564200, 18162600, 18491000, 23519900, 28545800, 28184300, 23225800, 34246700, 26130000, 37980500, 25349400, 38000200, 29291200, 29213900, 36875400, 128855300, 58566800, 42219900, 61424100, 44796800, 17152507]
+                },
+                
+                'TLT': {
+                    name: 'iShares 20+ Year Treasury Bond ETF',
+                    symbol: 'TLT',
+                    dates: ["2025-12-23", "2025-12-24", "2025-12-26", "2025-12-29", "2025-12-30", "2025-12-31", "2026-01-02", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05"],
+                    closes: [87.5, 88.02999877929688, 87.73999786376953, 88.06999969482422, 87.86000061035156, 87.16000366210938, 87.02999877929688, 87.45999908447266, 87.27999877929688, 87.79000091552734, 87.3499984741211, 87.93000030517578, 87.66999816894531, 87.81999969482422, 88.33000183105469, 88.30999755859375, 87.80000305175781, 86.6500015258789, 87.30999755859375, 87.69000244140625, 87.93000030517578, 88.3499984741211, 87.80000305175781, 87.5999984741211, 87.62000274658203, 87.12999725341797, 86.55000305175781, 86.76000213623047, 86.54000091552734, 87.21499633789062],
+                    volumes: [33624100, 25942000, 26522700, 29399800, 25106800, 36500000, 40731300, 30178000, 39015200, 39930900, 28204900, 57348800, 36103100, 30451400, 39233500, 37988900, 46382400, 66009500, 51220100, 42419300, 35968800, 38882400, 35180100, 38750300, 43855000, 45832200, 38171400, 27438200, 37855200, 11804502]
+                }
+                
+            };
+
+            let priceChart = null;
+
+            function openChartModal(symbol) {
+                const modal = document.getElementById('chartModal');
+                const title = document.getElementById('chartTitle');
+                const asset = assetsData[symbol];
+
+                if (!asset) return;
+
+                title.textContent = `${asset.name} (${asset.symbol}) - 30 Day Trend`;
+
+                // Destroy existing chart
+                if (priceChart) {
+                    priceChart.destroy();
+                }
+
+                // Create gradient
+                const ctx = document.getElementById('priceChart').getContext('2d');
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(0, 217, 255, 0.3)');
+                gradient.addColorStop(1, 'rgba(0, 217, 255, 0)');
+
+                // Create new chart
+                priceChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: asset.dates,
+                        datasets: [{
+                            label: 'Price',
+                            data: asset.closes,
+                            borderColor: '#00d9ff',
+                            backgroundColor: gradient,
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#00d9ff',
+                            pointBorderColor: '#fff',
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#00d9ff',
+                                bodyColor: '#fff',
+                                borderColor: '#00d9ff',
+                                borderWidth: 1,
+                                padding: 12,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'Price: $' + parseFloat(context.raw).toFixed(2);
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#888',
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#888',
+                                    callback: function(value) {
+                                        return '$' + value.toFixed(0);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                modal.classList.add('active');
+            }
+
+            function closeChartModal() {
+                const modal = document.getElementById('chartModal');
+                modal.classList.remove('active');
+            }
+
+            // Close modal when clicking outside
+            document.getElementById('chartModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeChartModal();
+                }
+            });
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeChartModal();
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,980 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Market Scanner Report - 2026-02-05</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .subtitle {
+            color: #888;
+            font-size: 1.1em;
+        }
+
+        .market-context {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .market-context h2 {
+            color: #00d9ff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .context-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .context-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #00d9ff;
+        }
+
+        .context-item .label {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .context-item .value {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .signals-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .signals-summary h2 {
+            color: #00ff88;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .signal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .asset-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .asset-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .asset-card .asset-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .asset-card .asset-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .asset-card .asset-symbol {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .asset-card .asset-type {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            text-transform: uppercase;
+        }
+
+        .asset-card .type-stock { background: rgba(59, 130, 246, 0.3); color: #60a5fa; }
+        .asset-card .type-crypto { background: rgba(251, 191, 36, 0.3); color: #fbbf24; }
+        .asset-card .type-index { background: rgba(139, 92, 246, 0.3); color: #a78bfa; }
+        .asset-card .type-commodity { background: rgba(234, 179, 8, 0.3); color: #eab308; }
+        .asset-card .type-etf { background: rgba(34, 197, 94, 0.3); color: #4ade80; }
+
+        .asset-card .price-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .asset-card .price {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .asset-card .price-change {
+            font-size: 1em;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+
+        .price-change.positive { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .price-change.negative { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .price-change.neutral { background: rgba(255, 255, 255, 0.1); color: #888; }
+
+        .asset-card .signal-badge {
+            text-align: center;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .signal-badge.strong-buy { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
+        .signal-badge.buy { background: linear-gradient(135deg, #10b981, #34d399); color: #fff; }
+        .signal-badge.weak-buy { background: rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+        .signal-badge.hold { background: rgba(255, 255, 255, 0.1); color: #888; }
+        .signal-badge.weak-sell { background: rgba(239, 68, 68, 0.3); color: #fca5a5; }
+        .signal-badge.sell { background: linear-gradient(135deg, #ef4444, #f87171); color: #fff; }
+        .signal-badge.strong-sell { background: linear-gradient(135deg, #dc2626, #ef4444); color: #fff; }
+
+        .asset-card .indicators {
+            margin-top: 15px;
+        }
+
+        .asset-card .indicator-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9em;
+        }
+
+        .asset-card .indicator-label {
+            color: #888;
+        }
+
+        .asset-card .indicator-value {
+            color: #e0e0e0;
+        }
+
+        .asset-card .signal-reasons {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .asset-card .signal-reasons h4 {
+            color: #00d9ff;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .asset-card .price-datetime {
+            color: #666;
+            font-size: 0.75em;
+            text-align: center;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+
+        .asset-card .signal-explanation {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-size: 0.8em;
+            color: #bbb;
+            line-height: 1.4;
+        }
+
+        .asset-card .signal-explanation strong {
+            color: #fff;
+        }
+
+        .asset-card .signal-explanation ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .asset-card .signal-explanation li {
+            margin: 4px 0;
+        }
+
+        .asset-card .signal-reasons ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .asset-card .signal-reasons li {
+            padding: 5px 0;
+            font-size: 0.85em;
+            color: #aaa;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .asset-card .signal-reasons li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #00d9ff;
+        }
+
+        .news-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .news-section h2 {
+            color: #fbbf24;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .news-item {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #fbbf24;
+        }
+
+        .news-item .title {
+            color: #fff;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .news-item .meta {
+            color: #888;
+            font-size: 0.85em;
+        }
+
+        .news-item a {
+            color: #00d9ff;
+            text-decoration: none;
+        }
+
+        .news-item a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .disclaimer {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.85em;
+            color: #fca5a5;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-box .value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #00ff88;
+        }
+
+        .stat-box .label {
+            color: #888;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .signal-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Daily Market Scanner Report</h1>
+            <p class="subtitle">Generated on 2026-02-05 at 22:22:04</p>
+        </div>
+
+        <div class="market-context">
+            <h2>🌐 Market Context</h2>
+            <div class="context-grid">
+                
+                <div class="context-item">
+                    <div class="label">Fear & Greed Index</div>
+                    <div class="value">Extreme Fear (12/100)</div>
+                    <div style="margin-top: 5px; font-size: 0.85em; color: #888;">Extreme Fear - High panic, may signal buying opportunity</div>
+                </div>
+                
+                
+                <div class="context-item">
+                    <div class="label">VIX (Volatility Index)</div>
+                    <div class="value">21.02</div>
+                    <div style="margin-top: 5px; font-size: 0.85em; color: #888;">Moderate volatility (21.02) - Some uncertainty in markets</div>
+                </div>
+                
+                
+                <div class="context-item">
+                    <div class="label">AD Line (Market Breadth)</div>
+                    <div class="value">Neutral</div>
+                    <div style="margin-top: 5px; font-size: 0.85em; color: #888;">Breadth is mixed with -0.2% - selective market participation</div>
+                </div>
+                
+            </div>
+        </div>
+
+        <div class="signals-summary">
+            <h2>📈 Trading Signals</h2>
+            <div class="summary-stats">
+                <div class="stat-box">
+                    <div class="value" style="color: #10b981;">7</div>
+                    <div class="label">Buy Signals</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" style="color: #888;">0</div>
+                    <div class="label">Hold/Neutral</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" style="color: #ef4444;">0</div>
+                    <div class="label">Sell Signals</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="signals-summary">
+            <h2>🎯 Detailed Asset Analysis</h2>
+            <div class="signal-grid">
+                
+                <div class="asset-card">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">NYSE Composite Index</div>
+                            <div class="asset-symbol">^NYA</div>
+                        </div>
+                        <span class="asset-type type-index">index</span>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price">$22,975.59</div>
+                        <div class="price-change positive">
+                            +0.41%
+                        </div>
+                    </div>
+
+                    <div class="price-datetime">
+                        Price as of: 2026-02-04 00:00:00
+                    </div>
+
+                    <div class="signal-badge strong-buy">
+                        STRONG BUY
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">58.6</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">MACD</span>
+                            <span class="indicator-value">188.33</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA20</span>
+                            <span class="indicator-value">1.1%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA200</span>
+                            <span class="indicator-value">9.2%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Stochastic %K</span>
+                            <span class="indicator-value">90.4</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Bollinger Position</span>
+                            <span class="indicator-value">87.6%</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="signal-explanation">
+                        <strong>Strong Buy Signal</strong> - Multiple technical indicators align to suggest a significant buying opportunity. Current price: $22975.59 (+0.41%)<br><br><strong>Key Bullish Factors:</strong><br>  • Price is above both 20-day and 50-day moving averages with bullish alignment (MA20 > MA50)<br>  • Price is above the 200-day moving average, indicating long-term uptrend<br><br><strong>Cautionary Notes:</strong><br>  • MACD (188.33) is below its signal line (200.40), confirming short-term bearish trend<br>  • Stochastic is overbought (90.4/82.1 > 80), suggesting a pullback may be due<br><br><strong>Action:</strong> Consider building positions with proper risk management. The confluence of oversold conditions and bullish momentum suggests potential upside.
+                    </div>
+                    
+
+                    
+                    <div class="signal-reasons">
+                        <h4>Key Signals:</h4>
+                        <ul>
+                            
+                            <li>MACD below signal line - bearish</li>
+                            
+                            <li>Price above MA(20) > MA(50) - bullish trend</li>
+                            
+                            <li>Price above 200-day MA - long-term bullish</li>
+                            
+                            <li>Stochastic (90.4/82.1) overbought - potential SELL</li>
+                            
+                            <li>Williams %R (-9.6) overbought - SELL signal</li>
+                            
+                        </ul>
+                    </div>
+                    
+                </div>
+                
+                <div class="asset-card">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">Tesla Inc</div>
+                            <div class="asset-symbol">TSLA</div>
+                        </div>
+                        <span class="asset-type type-stock">stock</span>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price">$406.01</div>
+                        <div class="price-change negative">
+                            -3.78%
+                        </div>
+                    </div>
+
+                    <div class="price-datetime">
+                        Price as of: 2026-02-04 00:00:00
+                    </div>
+
+                    <div class="signal-badge strong-buy">
+                        STRONG BUY
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">36.5</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">MACD</span>
+                            <span class="indicator-value">-8.23</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA20</span>
+                            <span class="indicator-value">-6.3%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA200</span>
+                            <span class="indicator-value">6.9%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Stochastic %K</span>
+                            <span class="indicator-value">12.8</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Bollinger Position</span>
+                            <span class="indicator-value">-7.6%</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="signal-explanation">
+                        <strong>Strong Buy Signal</strong> - Multiple technical indicators align to suggest a significant buying opportunity. Current price: $406.01 (-3.78%)<br><br><strong>Key Bullish Factors:</strong><br>  • RSI at 36.5 is approaching oversold levels, showing downward momentum may be fading<br>  • Price is above the 200-day moving average, indicating long-term uptrend<br>  • Price is below the lower Bollinger Band at -7.6% position, indicating oversold conditions<br>  • Stochastic is oversold (12.8/17.8 < 20), suggesting a bounce may be due<br>  • Williams %R at -87.2 indicates oversold conditions<br><br><strong>Cautionary Notes:</strong><br>  • MACD (-8.23) is below its signal line (-5.81), confirming short-term bearish trend<br>  • Price is below both 20-day and 50-day moving averages with bearish alignment (MA20 < MA50)<br><br><strong>Action:</strong> Consider building positions with proper risk management. The confluence of oversold conditions and bullish momentum suggests potential upside.
+                    </div>
+                    
+
+                    
+                    <div class="signal-reasons">
+                        <h4>Key Signals:</h4>
+                        <ul>
+                            
+                            <li>RSI (36.5) approaching oversold territory</li>
+                            
+                            <li>MACD below signal line - bearish</li>
+                            
+                            <li>Price below MA(20) < MA(50) - bearish trend</li>
+                            
+                            <li>Price above 200-day MA - long-term bullish</li>
+                            
+                            <li>Price below lower Bollinger Band (-7.6% position) - oversold</li>
+                            
+                        </ul>
+                    </div>
+                    
+                </div>
+                
+                <div class="asset-card">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">Microsoft Corp</div>
+                            <div class="asset-symbol">MSFT</div>
+                        </div>
+                        <span class="asset-type type-stock">stock</span>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price">$414.19</div>
+                        <div class="price-change positive">
+                            +0.72%
+                        </div>
+                    </div>
+
+                    <div class="price-datetime">
+                        Price as of: 2026-02-04 00:00:00
+                    </div>
+
+                    <div class="signal-badge strong-buy">
+                        STRONG BUY
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">33.0</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">MACD</span>
+                            <span class="indicator-value">-14.72</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA20</span>
+                            <span class="indicator-value">-9.2%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA200</span>
+                            <span class="indicator-value">-14.9%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Stochastic %K</span>
+                            <span class="indicator-value">7.5</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Bollinger Position</span>
+                            <span class="indicator-value">4.6%</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="signal-explanation">
+                        <strong>Strong Buy Signal</strong> - Multiple technical indicators align to suggest a significant buying opportunity. Current price: $414.19 (+0.72%)<br><br><strong>Key Bullish Factors:</strong><br>  • RSI at 33.0 is approaching oversold levels, showing downward momentum may be fading<br>  • Stochastic is oversold (7.5/4.9 < 20), suggesting a bounce may be due<br>  • Williams %R at -92.5 indicates oversold conditions<br>  • CCI at -151.8 is in oversold territory (< -100)<br><br><strong>Cautionary Notes:</strong><br>  • MACD (-14.72) is below its signal line (-9.70), confirming short-term bearish trend<br>  • Price is below both 20-day and 50-day moving averages with bearish alignment (MA20 < MA50)<br><br><strong>Action:</strong> Consider building positions with proper risk management. The confluence of oversold conditions and bullish momentum suggests potential upside.
+                    </div>
+                    
+
+                    
+                    <div class="signal-reasons">
+                        <h4>Key Signals:</h4>
+                        <ul>
+                            
+                            <li>RSI (33.0) approaching oversold territory</li>
+                            
+                            <li>MACD below signal line - bearish</li>
+                            
+                            <li>Price below MA(20) < MA(50) - bearish trend</li>
+                            
+                            <li>Price below 200-day MA - long-term bearish</li>
+                            
+                            <li>Stochastic (7.5/4.9) oversold - potential BUY</li>
+                            
+                        </ul>
+                    </div>
+                    
+                </div>
+                
+                <div class="asset-card">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">Bitcoin</div>
+                            <div class="asset-symbol">BTC-USD</div>
+                        </div>
+                        <span class="asset-type type-crypto">crypto</span>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price">$69,480.48</div>
+                        <div class="price-change negative">
+                            -4.85%
+                        </div>
+                    </div>
+
+                    <div class="price-datetime">
+                        Price as of: 2026-02-05 00:00:00
+                    </div>
+
+                    <div class="signal-badge strong-buy">
+                        STRONG BUY
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">15.2</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">MACD</span>
+                            <span class="indicator-value">-4621.95</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA20</span>
+                            <span class="indicator-value">-18.3%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA200</span>
+                            <span class="indicator-value">-32.6%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Stochastic %K</span>
+                            <span class="indicator-value">1.7</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Bollinger Position</span>
+                            <span class="indicator-value">-4.1%</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="signal-explanation">
+                        <strong>Strong Buy Signal</strong> - Multiple technical indicators align to suggest a significant buying opportunity. Current price: $69480.48 (-4.85%)<br><br><strong>Key Bullish Factors:</strong><br>  • RSI at 15.2 is deeply oversold (<30), suggesting the asset is oversold and may bounce<br>  • Price is below the lower Bollinger Band at -4.1% position, indicating oversold conditions<br>  • Stochastic is oversold (1.7/7.7 < 20), suggesting a bounce may be due<br>  • Williams %R at -98.3 indicates oversold conditions<br>  • CCI at -166.1 is in oversold territory (< -100)<br><br><strong>Cautionary Notes:</strong><br>  • MACD (-4621.95) is below its signal line (-2793.04), confirming short-term bearish trend<br>  • Price is below both 20-day and 50-day moving averages with bearish alignment (MA20 < MA50)<br><br><strong>Action:</strong> Consider building positions with proper risk management. The confluence of oversold conditions and bullish momentum suggests potential upside.
+                    </div>
+                    
+
+                    
+                    <div class="signal-reasons">
+                        <h4>Key Signals:</h4>
+                        <ul>
+                            
+                            <li>RSI (15.2) indicates oversold - BUY signal</li>
+                            
+                            <li>MACD below signal line - bearish</li>
+                            
+                            <li>Price below MA(20) < MA(50) - bearish trend</li>
+                            
+                            <li>Price below 200-day MA - long-term bearish</li>
+                            
+                            <li>Price below lower Bollinger Band (-4.1% position) - oversold</li>
+                            
+                        </ul>
+                    </div>
+                    
+                </div>
+                
+                <div class="asset-card">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">Gold Futures</div>
+                            <div class="asset-symbol">GC=F</div>
+                        </div>
+                        <span class="asset-type type-commodity">commodity</span>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price">$4,856.20</div>
+                        <div class="price-change negative">
+                            -1.30%
+                        </div>
+                    </div>
+
+                    <div class="price-datetime">
+                        Price as of: 2026-02-05 00:00:00
+                    </div>
+
+                    <div class="signal-badge strong-buy">
+                        STRONG BUY
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">56.6</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">MACD</span>
+                            <span class="indicator-value">126.16</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA20</span>
+                            <span class="indicator-value">0.9%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA200</span>
+                            <span class="indicator-value">27.8%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Stochastic %K</span>
+                            <span class="indicator-value">38.5</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Bollinger Position</span>
+                            <span class="indicator-value">54.4%</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="signal-explanation">
+                        <strong>Strong Buy Signal</strong> - Multiple technical indicators align to suggest a significant buying opportunity. Current price: $4856.20 (-1.30%)<br><br><strong>Key Bullish Factors:</strong><br>  • Price is above both 20-day and 50-day moving averages with bullish alignment (MA20 > MA50)<br>  • Price is above the 200-day moving average, indicating long-term uptrend<br>  • Volume is 9.1x the average, confirming strong conviction in the move<br><br><strong>Cautionary Notes:</strong><br>  • MACD (126.16) is below its signal line (151.47), confirming short-term bearish trend<br>  • Stochastic shows bearish crossover (%K crossed below %D)<br><br><strong>Action:</strong> Consider building positions with proper risk management. The confluence of oversold conditions and bullish momentum suggests potential upside.
+                    </div>
+                    
+
+                    
+                    <div class="signal-reasons">
+                        <h4>Key Signals:</h4>
+                        <ul>
+                            
+                            <li>MACD below signal line - bearish</li>
+                            
+                            <li>Price above MA(20) > MA(50) - bullish trend</li>
+                            
+                            <li>Price above 200-day MA - long-term bullish</li>
+                            
+                            <li>Stochastic (38.5/41.6) bearish crossover</li>
+                            
+                            <li>Volume 9.1x above average - strong conviction</li>
+                            
+                        </ul>
+                    </div>
+                    
+                </div>
+                
+                <div class="asset-card">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">iShares 20+ Year Treasury Bond ETF</div>
+                            <div class="asset-symbol">TLT</div>
+                        </div>
+                        <span class="asset-type type-etf">etf</span>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price">$86.54</div>
+                        <div class="price-change negative">
+                            -0.25%
+                        </div>
+                    </div>
+
+                    <div class="price-datetime">
+                        Price as of: 2026-02-04 00:00:00
+                    </div>
+
+                    <div class="signal-badge strong-buy">
+                        STRONG BUY
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">34.2</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">MACD</span>
+                            <span class="indicator-value">-0.30</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA20</span>
+                            <span class="indicator-value">-1.1%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA200</span>
+                            <span class="indicator-value">-1.5%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Stochastic %K</span>
+                            <span class="indicator-value">4.9</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Bollinger Position</span>
+                            <span class="indicator-value">5.7%</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="signal-explanation">
+                        <strong>Strong Buy Signal</strong> - Multiple technical indicators align to suggest a significant buying opportunity. Current price: $86.54 (-0.25%)<br><br><strong>Key Bullish Factors:</strong><br>  • RSI at 34.2 is approaching oversold levels, showing downward momentum may be fading<br>  • Stochastic is oversold (4.9/6.7 < 20), suggesting a bounce may be due<br>  • Williams %R at -95.1 indicates oversold conditions<br>  • CCI at -146.9 is in oversold territory (< -100)<br><br><strong>Cautionary Notes:</strong><br>  • MACD (-0.30) is below its signal line (-0.20), confirming short-term bearish trend<br>  • Price is below both 20-day and 50-day moving averages with bearish alignment (MA20 < MA50)<br><br><strong>Action:</strong> Consider building positions with proper risk management. The confluence of oversold conditions and bullish momentum suggests potential upside.
+                    </div>
+                    
+
+                    
+                    <div class="signal-reasons">
+                        <h4>Key Signals:</h4>
+                        <ul>
+                            
+                            <li>RSI (34.2) approaching oversold territory</li>
+                            
+                            <li>MACD below signal line - bearish</li>
+                            
+                            <li>Price below MA(20) < MA(50) - bearish trend</li>
+                            
+                            <li>Price below 200-day MA - long-term bearish</li>
+                            
+                            <li>Stochastic (4.9/6.7) oversold - potential BUY</li>
+                            
+                        </ul>
+                    </div>
+                    
+                </div>
+                
+                <div class="asset-card">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">Hang Seng Index</div>
+                            <div class="asset-symbol">^HSI</div>
+                        </div>
+                        <span class="asset-type type-index">index</span>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price">$26,885.24</div>
+                        <div class="price-change positive">
+                            +0.14%
+                        </div>
+                    </div>
+
+                    <div class="price-datetime">
+                        Price as of: 2026-02-05 00:00:00
+                    </div>
+
+                    <div class="signal-badge buy">
+                        BUY
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">50.6</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">MACD</span>
+                            <span class="indicator-value">219.03</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA20</span>
+                            <span class="indicator-value">-0.0%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Price vs MA200</span>
+                            <span class="indicator-value">6.6%</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Stochastic %K</span>
+                            <span class="indicator-value">30.8</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Bollinger Position</span>
+                            <span class="indicator-value">49.4%</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="signal-explanation">
+                        <strong>Buy Signal</strong> - Technical indicators favor the bullish side. Current price: $26885.24 (+0.14%)<br><br><strong>Supporting Factors:</strong><br>  • Price is above the 200-day moving average, indicating long-term uptrend<br>  • Stochastic shows bullish crossover (%K crossed above %D)<br><br><strong>Watch For:</strong><br>  • MACD (219.03) is below its signal line (265.97), confirming short-term bearish trend<br>  • Volume is 0.0x the average, suggesting weak participation<br><br><strong>Action:</strong> Favorable entry point for long positions. Look for confirmation from volume continuation.
+                    </div>
+                    
+
+                    
+                    <div class="signal-reasons">
+                        <h4>Key Signals:</h4>
+                        <ul>
+                            
+                            <li>MACD below signal line - bearish</li>
+                            
+                            <li>Price above 200-day MA - long-term bullish</li>
+                            
+                            <li>Stochastic (30.8/29.1) bullish crossover</li>
+                            
+                        </ul>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+
+        
+
+        <div class="footer">
+            <p>Report generated by Stock Scanner</p>
+            <div class="disclaimer">
+                <strong>Disclaimer:</strong> This report is for informational purposes only and does not constitute
+                financial advice. Always do your own research and consult with a qualified financial advisor
+                before making investment decisions. Past performance does not guarantee future results.
+            </div>
+        </div>
+    </div>
+</body>
+</html>
