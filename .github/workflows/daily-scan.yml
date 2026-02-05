@@ -1,4 +1,4 @@
-name: Daily Market Scanner
+  name: Daily Market Scanner
 
   on:
     # Run automatically every weekday at 9:30 AM ET (14:30 UTC)
@@ -77,4 +77,3 @@ name: Daily Market Scanner
             git add reports/
             git commit -m "Update market report [skip ci]"
             git push
-
