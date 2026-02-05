@@ -1,4 +1,4 @@
-  name: Daily Market Scanner
+  name: Daily Market Scanner v3
 
   on:
     schedule:
